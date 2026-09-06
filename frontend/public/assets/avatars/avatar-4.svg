@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="Lavender avatar">
+  <defs><linearGradient id="b" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#eee8fb"/><stop offset="1" stop-color="#cbbbea"/></linearGradient></defs>
+  <rect width="160" height="160" rx="38" fill="url(#b)"/>
+  <circle cx="80" cy="68" r="34" fill="#efbea0"/>
+  <path d="M44 66c1-31 18-47 37-47 24 0 40 18 40 46-11-11-24-18-38-20-10 9-23 16-39 21Z" fill="#5a3e63"/>
+  <circle cx="67" cy="70" r="3" fill="#332738"/><circle cx="94" cy="70" r="3" fill="#332738"/>
+  <path d="M69 86c7 6 15 6 22 0" fill="none" stroke="#b76d5d" stroke-width="3" stroke-linecap="round"/>
+  <path d="M28 151c7-35 25-52 52-52s45 17 52 52" fill="#66518f"/>
+  <path d="M59 104c8 10 14 15 21 18 8-4 15-10 21-18" fill="#f4f0fb"/>
+</svg>

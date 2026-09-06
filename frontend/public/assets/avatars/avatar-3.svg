@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="Mint avatar">
+  <defs><linearGradient id="b" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#e2f7ef"/><stop offset="1" stop-color="#a9dfca"/></linearGradient></defs>
+  <rect width="160" height="160" rx="38" fill="url(#b)"/>
+  <circle cx="80" cy="69" r="34" fill="#d8a37e"/>
+  <path d="M45 64c1-30 18-44 37-44 25 0 39 17 38 45-9-8-18-13-28-16-14 8-29 13-47 15Z" fill="#3b2c29"/>
+  <path d="M51 42c14-19 43-27 63-3-25-8-44-5-63 3Z" fill="#453330"/>
+  <circle cx="67" cy="71" r="3" fill="#2b2929"/><circle cx="94" cy="71" r="3" fill="#2b2929"/>
+  <path d="M69 86c7 5 15 5 22 0" fill="none" stroke="#9c5d4d" stroke-width="3" stroke-linecap="round"/>
+  <path d="M28 151c7-34 25-52 52-52s45 18 52 52" fill="#347c67"/>
+  <path d="M62 104h36l-18 17Z" fill="#dcefe9"/>
+</svg>

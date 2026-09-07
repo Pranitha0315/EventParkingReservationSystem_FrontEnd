@@ -1,0 +1,8 @@
+<section class="auth-shell"><div class="card auth-card">
+  <h1>Email Verification</h1>
+  @if (loading()) { <app-loading-spinner label="Verifying email..." /> }
+  @else {
+    <app-error-message [message]="error()" />
+    @if (message()) { <div class="alert alert-success">{{ message() }}</div><a class="btn" routerLink="/login">Go to login</a> }
+  }
+</div></section>

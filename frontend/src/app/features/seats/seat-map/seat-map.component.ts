@@ -50,9 +50,9 @@ export class SeatMapComponent implements OnInit {
     });
   }
 
-  // selected(seat: Seat): boolean { return this.state.seats().some(x => x.seatId === seat.seatId); }
+  selected(seat: Seat): boolean { return this.state.seats().some(x => x.seatId === seat.seatId); }
   toggle(seat: Seat): void { this.state.toggleSeat(seat); }
-  // continue(): void { if (this.state.seatCount() > 0) void this.router.navigate(['/events', this.eventId, 'parking']); }
+  continue(): void { if (this.state.seatCount() > 0) void this.router.navigate(['/events', this.eventId, 'parking']); }
   clearSelection(): void { this.state.clearSeats(); }
 
   seatCountOptions(): number[] {

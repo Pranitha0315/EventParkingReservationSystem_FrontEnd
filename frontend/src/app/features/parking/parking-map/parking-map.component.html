@@ -1,0 +1,132 @@
+<!-- <section class="booking-progress" aria-label="Booking progress">
+  <a [routerLink]="['/events', eventId]" class="progress-step done"><span>1</span><div><b>Event</b><small>Chosen</small></div></a>
+  <a [routerLink]="['/events', eventId, 'seats']" class="progress-step done"><span>2</span><div><b>Seats</b><small>{{ state.seatCount() }} selected</small></div></a>
+  <div class="progress-step active"><span>3</span><div><b>Parking</b><small>Choose or skip</small></div></div>
+  <div class="progress-step"><span>4</span><div><b>Checkout</b><small>Next</small></div></div>
+</section>
+
+<div class="page-header parking-page-header v3-parking-header">
+  <div>
+    <span class="eyebrow">PARKING · OPTIONAL</span>
+    <h1>Pick one parking space</h1>
+    <p>{{ event()?.name || 'Your event' }} · Green is available, blue is your selection, grey is unavailable.</p>
+  </div>
+  <a class="btn btn-outline" [routerLink]="['/events', eventId, 'seats']">← Change seats</a>
+</div>
+
+<app-error-message [message]="error()" [retryable]="true" (retry)="load()" />
+@if (loading()) { <app-loading-spinner label="Preparing the parking map..." /> }
+@else if (!slots().length) {
+  <section class="card parking-empty-card">
+    <app-empty-state title="Parking is not configured for this event" message="You can continue with your seat booking without parking." />
+    <button class="btn" type="button" (click)="skipParking()">Continue without parking →</button>
+  </section>
+} @else {
+  <section class="parking-simple-guide">
+    <div><span>1</span><strong>Choose a zone</strong><small>Use the zone buttons.</small></div>
+    <div><span>2</span><strong>Tap a green space</strong><small>Only one parking space is needed.</small></div>
+    <div><span>3</span><strong>Continue</strong><small>Or skip parking completely.</small></div>
+  </section>
+
+  <div class="parking-booking-layout v3-parking-booking-layout">
+    <section class="parking-main-column">
+      <div class="parking-simple-toolbar">
+        <div class="parking-zone-filter v3-zone-filter" aria-label="Parking zone filter">
+          @for (zone of zoneNames(); track zone) {
+            <button type="button" [class.active]="activeZone() === zone" (click)="setZone(zone)">{{ zone }}</button>
+          }
+        </div>
+        <button class="btn btn-outline btn-small" type="button" (click)="chooseRecommended()" [disabled]="availableCount() === 0">Choose first available</button>
+      </div>
+
+      <div class="parking-simple-legend">
+        <span><i class="parking-dot free"></i>Available</span>
+        <span><i class="parking-dot chosen"></i>Selected</span>
+        <span><i class="parking-dot busy"></i>Unavailable</span>
+        <b>{{ availableCount() }} spaces available</b>
+      </div>
+
+      <section class="parking-lot-card v3-parking-lot-card">
+        <div class="parking-flow-banner entrance"><span>↓</span><div><b>ENTRANCE</b><small>Start here</small></div></div>
+
+        @for (zone of zoneViews(); track zone.name) {
+          <article class="parking-zone-block v3-parking-zone-block">
+            <header class="parking-zone-heading v3-parking-zone-heading">
+              <div><span>ZONE</span><strong>{{ zone.name }}</strong></div>
+              <p><b>{{ zone.available }}</b> available of {{ zone.total }}</p>
+            </header>
+
+            <div class="parking-zone-map v3-parking-zone-map">
+              <div class="parking-slot-bank v3-slot-bank">
+                @for (slot of zone.left; track slot.parkingSlotId) {
+                  <button type="button"
+                    class="visual-parking-slot v3-parking-slot"
+                    [class.selected]="selected(slot)"
+                    [class.unavailable]="slot.status !== 'Available'"
+                    [disabled]="slot.status !== 'Available'"
+                    (click)="choose(slot)"
+                    [attr.aria-label]="slotLabel(slot) + ' parking slot, ' + (selected(slot) ? 'selected' : slot.status)">
+                    <span class="parking-space-mark">{{ slot.status === 'Available' ? 'P' : '×' }}</span>
+                    <div><strong>{{ slot.slotNumber }}</strong><small>{{ slot.fee | currency:'LKR':'symbol-narrow':'1.0-0' }}</small></div>
+                    <em>{{ selected(slot) ? '✓ YOUR SPACE' : (slot.status === 'Available' ? 'AVAILABLE' : 'TAKEN') }}</em>
+                  </button>
+                }
+              </div>
+
+              <div class="parking-drive-lane v3-drive-lane" aria-hidden="true">
+                <span>↓</span><b>DRIVE</b><i></i><i></i><i></i><span>↓</span>
+              </div>
+
+              <div class="parking-slot-bank v3-slot-bank">
+                @for (slot of zone.right; track slot.parkingSlotId) {
+                  <button type="button"
+                    class="visual-parking-slot v3-parking-slot"
+                    [class.selected]="selected(slot)"
+                    [class.unavailable]="slot.status !== 'Available'"
+                    [disabled]="slot.status !== 'Available'"
+                    (click)="choose(slot)"
+                    [attr.aria-label]="slotLabel(slot) + ' parking slot, ' + (selected(slot) ? 'selected' : slot.status)">
+                    <span class="parking-space-mark">{{ slot.status === 'Available' ? 'P' : '×' }}</span>
+                    <div><strong>{{ slot.slotNumber }}</strong><small>{{ slot.fee | currency:'LKR':'symbol-narrow':'1.0-0' }}</small></div>
+                    <em>{{ selected(slot) ? '✓ YOUR SPACE' : (slot.status === 'Available' ? 'AVAILABLE' : 'TAKEN') }}</em>
+                  </button>
+                }
+              </div>
+            </div>
+          </article>
+        }
+
+        <div class="parking-flow-banner exit"><span>↑</span><div><b>EXIT</b><small>Leave after the event</small></div></div>
+      </section>
+    </section>
+
+    <aside class="card summary-panel parking-selection-card v3-parking-selection-card">
+      <span class="eyebrow">YOUR PARKING</span>
+      @if (state.parking(); as parking) {
+        <div class="parking-confirmed-icon">✓</div>
+        <h2>Space {{ parking.slotNumber }}</h2>
+        <p class="parking-selection-copy">This parking space will be added to the same booking as your seats.</p>
+        <div class="selected-parking-pass v3-selected-parking-pass">
+          <div><small>ZONE</small><strong>{{ parking.zone || 'General' }}</strong></div>
+          <div><small>SPACE</small><strong>{{ parking.slotNumber }}</strong></div>
+          <div><small>FEE</small><strong>{{ parking.fee | currency:'LKR':'symbol-narrow':'1.0-0' }}</strong></div>
+        </div>
+        <button class="btn btn-outline parking-remove-btn" type="button" (click)="state.setParking(null)">Remove this space</button>
+      } @else {
+        <div class="parking-empty-icon">P</div>
+        <h2>No parking selected</h2>
+        <p class="parking-selection-copy">Tap one green space on the map. If you do not need parking, use the skip button below.</p>
+      }
+
+      <div class="parking-order-breakdown">
+        <div><span>{{ state.seatCount() }} seat(s)</span><strong>{{ state.seatTotal() | currency:'LKR':'symbol-narrow':'1.2-2' }}</strong></div>
+        <div><span>Parking</span><strong>{{ (state.parking()?.fee || 0) | currency:'LKR':'symbol-narrow':'1.2-2' }}</strong></div>
+        <div class="parking-total"><span>Total</span><strong>{{ state.total() | currency:'LKR':'symbol-narrow':'1.2-2' }}</strong></div>
+      </div>
+
+      <button class="btn parking-continue-btn" type="button" (click)="continue()">{{ state.parking() ? 'Continue with selected space' : 'Continue without parking' }} <span>→</span></button>
+      @if (!state.parking()) { <button class="parking-skip-link" type="button" (click)="skipParking()">Skip parking — I do not need a space</button> }
+    </aside>
+  </div>
+} -->
+

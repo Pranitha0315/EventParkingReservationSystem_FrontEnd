@@ -6,6 +6,7 @@ import { AuthResponse, LoginRequest, MessageResponse } from '../models/auth.mode
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+[x: string]: any;
 private readonly http = inject(HttpClient);
 private readonly storageKey = 'eprs-auth';
 private readonly userSignal = signal<AuthResponse | null>(this.restoreSession());

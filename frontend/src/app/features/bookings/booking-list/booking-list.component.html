@@ -1,0 +1,11 @@
+<div class="page-header"><div><h1>My Bookings</h1><p>View booking history, status, seats and payment state.</p></div><a class="btn" routerLink="/events">Book another event</a></div>
+<app-error-message [message]="error()" [retryable]="true" (retry)="load()" />
+@if (loading()) { <app-loading-spinner label="Loading bookings..." /> }
+@else if (!items().length) { <app-empty-state title="No bookings yet" message="Choose an event and reserve your first seats." /> }
+@else {
+  <div class="table-wrap"><table><thead><tr><th>Booking</th><th>Event</th><th>Status</th><th>Seats</th><th>Total</th><th>Created</th><th></th></tr></thead><tbody>
+    @for (booking of items(); track booking.bookingId) {
+      <tr><td><strong>{{ booking.bookingNumber }}</strong></td><td>{{ booking.eventName }}</td><td><app-status-badge [status]="booking.status | bookingStatus" /></td><td>{{ booking.seats.length }}</td><td>{{ booking.totalAmount | currency:'LKR':'symbol-narrow':'1.2-2' }}</td><td>{{ booking.createdAtUtc | date:'medium' }}</td><td><a class="btn btn-outline btn-small" [routerLink]="['/bookings', booking.bookingId]">Details</a></td></tr>
+    }
+  </tbody></table></div>
+}

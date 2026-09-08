@@ -1,0 +1,46 @@
+<div class="page-header print-hide receipt-page-header">
+  <div><span class="eyebrow">PAYMENT COMPLETE</span><h1>Your event receipt is ready</h1><p>The receipt keeps the backend payment details and adds an event watermark for a clearer event pass feel.</p></div>
+  <div class="receipt-actions">
+    <a class="btn btn-outline" routerLink="/payments">Payment history</a>
+    <button class="btn btn-outline" type="button" (click)="downloadReceipt()">{{ downloaded() ? '✓ Downloaded' : '↓ Download receipt' }}</button>
+    <button class="btn" type="button" (click)="print()">Print / Save PDF</button>
+  </div>
+</div>
+<app-error-message [message]="error()" [retryable]="true" (retry)="load()" />
+@if (loading()) { <app-loading-spinner label="Preparing your receipt..." /> }
+@else if (content()) {
+  <section class="receipt-ticket-wrap v3-receipt-wrap">
+    <div class="receipt-ticket v3-receipt-ticket">
+      <div class="event-receipt-watermark" aria-hidden="true">{{ eventWatermark() }}</div>
+
+      <header class="receipt-brand-header">
+        <div class="receipt-brand"><span>EP</span><div><strong>Event & Parking</strong><small>Reservation System</small></div></div>
+        <div class="receipt-paid-stamp">PAID ✓</div>
+      </header>
+
+      <div class="receipt-hero-row v3-receipt-hero-row">
+        <div><span class="eyebrow">OFFICIAL EVENT RECEIPT</span><h2>{{ eventWatermark() }}</h2><p>Your payment has been recorded successfully. Keep this receipt with your booking details.</p></div>
+        <div class="receipt-number-card"><small>RECEIPT ID</small><strong>#{{ paymentId }}</strong></div>
+      </div>
+
+      <div class="receipt-cut-line"><span></span><b>✦</b><span></span></div>
+
+      <div class="receipt-detail-panel v3-receipt-details">
+        @for (line of receiptLines(); track $index) {
+          <div class="receipt-detail-line" [class.receipt-detail-title]="$index === 0">{{ line }}</div>
+        }
+      </div>
+
+      <div class="receipt-perks">
+        <div><span>🎟️</span><strong>Event entry</strong><small>Keep the booking reference ready.</small></div>
+        <div><span>🅿️</span><strong>Parking</strong><small>Use your reserved space if included.</small></div>
+        <div><span>⬇️</span><strong>Downloadable</strong><small>Save this styled receipt or print to PDF.</small></div>
+      </div>
+
+      <footer class="receipt-footer">
+        <div class="receipt-fake-qr" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div><strong>Enjoy {{ eventWatermark() }}.</strong><p>Present your booking details when required at the venue.</p></div>
+      </footer>
+    </div>
+  </section>
+}

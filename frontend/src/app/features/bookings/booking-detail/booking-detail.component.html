@@ -1,0 +1,27 @@
+<div class="page-header"><div><h1>Booking Details</h1><p>Reservation, hold and payment status.</p></div><a class="btn btn-outline" routerLink="/bookings">Back to bookings</a></div>
+<app-error-message [message]="error()" [retryable]="true" (retry)="load()" />
+@if (success()) { <div class="alert alert-success">{{ success() }}</div> }
+@if (loading()) { <app-loading-spinner label="Loading booking..." /> }
+@else if (booking(); as item) {
+  <div class="grid grid-2">
+    <section class="card">
+      <div class="summary-row"><span>Booking number</span><strong>{{ item.bookingNumber }}</strong></div>
+      <div class="summary-row"><span>Event</span><strong>{{ item.eventName }}</strong></div>
+      <div class="summary-row"><span>Status</span><app-status-badge [status]="item.status | bookingStatus" /></div>
+      <div class="summary-row"><span>Created</span><strong>{{ item.createdAtUtc | date:'medium' }}</strong></div>
+      @if (item.status === 'Pending') { @if (hold(); as h) { <div class="alert" [class.alert-warning]="!h.isExpired" [class.alert-error]="h.isExpired">{{ h.isExpired ? 'Booking hold expired.' : ('Payment hold: ' + h.remainingSeconds + ' seconds remaining') }}</div> } }
+      <div class="actions">
+        @if (item.status === 'Pending') { <a class="btn btn-success" [routerLink]="['/bookings', item.bookingId, 'payment']">Pay now</a> }
+        @if (item.status === 'Pending' || item.status === 'Confirmed') { <button class="btn btn-danger" type="button" (click)="confirmOpen.set(true)">Cancel booking</button> }
+      </div>
+    </section>
+    <aside class="card">
+      <h2 class="section-title">Seats & Parking</h2>
+      <div class="pill-list">@for (seat of item.seats; track seat.seatId) { <span class="pill">{{ seat.seatNumber | seatLabel }} · {{ seat.price | currency:'LKR':'symbol-narrow':'1.2-2' }}</span> }</div>
+      @if (item.parking) { <div class="summary-row"><span>Parking</span><strong>{{ item.parking.slotNumber }} · {{ item.parking.fee | currency:'LKR':'symbol-narrow':'1.2-2' }}</strong></div> }
+      @else { <div class="alert alert-info">No parking reserved.</div> }
+      <div class="summary-row"><span>Total</span><strong class="summary-total">{{ item.totalAmount | currency:'LKR':'symbol-narrow':'1.2-2' }}</strong></div>
+    </aside>
+  </div>
+}
+<app-confirm-dialog [open]="confirmOpen()" title="Cancel booking?" message="Cancelling releases all held or reserved seats and parking." confirmText="Cancel booking" [danger]="true" (confirm)="cancel()" (cancel)="confirmOpen.set(false)" />

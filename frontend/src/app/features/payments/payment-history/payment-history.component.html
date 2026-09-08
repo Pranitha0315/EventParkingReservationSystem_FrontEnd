@@ -1,0 +1,5 @@
+<div class="page-header"><div><h1>Payment History</h1><p>Completed simulated payments for your bookings.</p></div></div>
+<app-error-message [message]="error()" [retryable]="true" (retry)="load()" />
+@if (loading()) { <app-loading-spinner label="Loading payments..." /> }
+@else if (!items().length) { <app-empty-state title="No payments yet" message="Completed booking payments will appear here." /> }
+@else { <div class="table-wrap"><table><thead><tr><th>Payment</th><th>Booking</th><th>Amount</th><th>Status</th><th>Paid</th><th></th></tr></thead><tbody>@for (payment of items(); track payment.paymentId) { <tr><td>#{{ payment.paymentId }}</td><td><a [routerLink]="['/bookings', payment.bookingId]"><strong>#{{ payment.bookingId }}</strong></a></td><td>{{ payment.amount | currency:'LKR':'symbol-narrow':'1.2-2' }}</td><td><app-status-badge [status]="payment.status" /></td><td>{{ payment.paidAtUtc | date:'medium' }}</td><td><a class="btn btn-outline btn-small" [routerLink]="['/payments', payment.paymentId, 'receipt']">Receipt</a></td></tr> }</tbody></table></div> }

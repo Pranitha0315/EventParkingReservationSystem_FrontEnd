@@ -1,1 +1,19 @@
+<div class="page-header"><div>
+    <h1>Notifications</h1><p>Booking, payment and event updates. Newest first.</p>
+    </div>
+    <div class="nav-summary">{{ service.unreadCount() }} unread</div>
+</div>
+
+<app-error-message [message]="error()" [retryable]="true" (retry)="load()" />
+@if (loading()) { <app-loading-spinner label="Loading notifications..." /> }
+@else if (!service.items().length) { <app-empty-state title="No notifications" message="System messages will appear here when booking or event activity occurs." /> }
+@else {
+  <div class="grid">
+    @for (item of service.items(); track item.notificationId) {
+      <article class="card notification-item" [class.unread]="!item.isRead">
+        <div class="page-header" style="margin-bottom:0"><div><strong>{{ item.type | titlecase }}</strong><p>{{ item.message }}</p><div class="notification-meta">{{ item.createdAtUtc | date:'medium' }}</div></div>@if (!item.isRead) { <button class="btn btn-outline btn-small" type="button" (click)="markRead(item.notificationId)">Mark read</button> }</div>
+      </article>
+    }
+  </div>
+}
 

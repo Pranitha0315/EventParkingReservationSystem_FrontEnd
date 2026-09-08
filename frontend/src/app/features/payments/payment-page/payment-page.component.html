@@ -1,0 +1,78 @@
+<!-- <div class="page-header payment-page-header">
+  <div><span class="eyebrow">SECURE CHECKOUT</span><h1>Complete your payment</h1><p>Enter your card details manually and watch the card preview update live.</p></div>
+  <a class="btn btn-outline" [routerLink]="['/bookings', bookingId]">Back to booking</a>
+</div>
+<app-error-message [message]="error()" />
+@if (loading()) { <app-loading-spinner label="Loading payment summary..." /> }
+@else if (summary(); as item) {
+  <div class="payment-experience-grid">
+    <section class="card payment-form-card">
+      <div class="payment-form-heading">
+        <div class="payment-lock-icon">🔒</div>
+        <div><h2>Card details</h2><p>Type your details and the card preview updates instantly.</p></div>
+      </div>
+      <div class="credit-card-stage" [class.show-back]="cardBack()">
+        <div class="credit-card-3d">
+          <div class="credit-card-face credit-card-front">
+            <div class="card-topline"><span class="card-chip"><i></i><i></i><i></i></span><strong>{{ cardBrand() }}</strong></div>
+            <div class="card-contactless"></div>
+            <div class="card-number-live">{{ cardNumberDisplay() }}</div>
+            <div class="card-bottomline">
+              <div><small>CARD HOLDER</small><strong>{{ cardholderDisplay() }}</strong></div>
+              <div><small>EXPIRES</small><strong>{{ expiryDisplay() }}</strong></div>
+            </div>
+          </div>
+          <div class="credit-card-face credit-card-back">
+            <div class="card-magnetic-strip"></div>
+            <div class="card-signature-row"><span>AUTHORIZED SIGNATURE</span><strong>{{ form.controls.cvv.value || '•••' }}</strong></div>
+            <div class="card-back-brand">EVENT & PARKING · {{ cardBrand() }}</div>
+          </div>
+        </div>
+      </div>
+
+      <form class="payment-form-grid" [formGroup]="form">
+        <div class="form-field full">
+          <label>Cardholder name</label>
+          <input formControlName="cardholder" autocomplete="cc-name" placeholder="Name on card">
+          @if (form.controls.cardholder.touched && form.controls.cardholder.invalid) { <span class="field-error">Enter the cardholder name.</span> }
+        </div>
+        <div class="form-field full">
+          <label>Card number</label>
+          <div class="input-with-icon card-input"><span>💳</span><input formControlName="cardNumber" inputmode="numeric" autocomplete="cc-number" maxlength="23" (input)="normalizeCardNumber()" placeholder="0000 0000 0000 0000"></div>
+          @if (form.controls.cardNumber.touched && form.controls.cardNumber.invalid) { <span class="field-error">Enter a valid Luhn-check card number.</span> }
+        </div>
+        <div class="form-field">
+          <label>Expiry</label>
+          <input formControlName="expiry" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/YY" (input)="normalizeExpiry()">
+          @if (form.controls.expiry.touched && (form.controls.expiry.invalid || form.errors?.['expiryPast'])) { <span class="field-error">Enter a future expiry in MM/YY format.</span> }
+        </div>
+        <div class="form-field">
+          <label>CVV <small class="cvv-flip-hint">Card flips while CVV is active</small></label>
+          <input type="password" formControlName="cvv" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="123" (focus)="cardBack.set(true)" (blur)="cardBack.set(false)">
+          @if (form.controls.cvv.touched && form.controls.cvv.invalid) { <span class="field-error">CVV must be 3 or 4 digits.</span> }
+        </div>
+      </form>
+      <div class="payment-security-note"><span>🛡️</span><div><strong>Manual card entry</strong><small>Card details are validated in the checkout form and are not stored by the current backend payment endpoint.</small></div></div>
+    </section>
+
+    <aside class="card summary-panel payment-summary-card">
+      <span class="eyebrow">ORDER SUMMARY</span>
+      <h2>Your reservation</h2>
+      <div class="booking-ticket-mini">
+        <div class="ticket-mini-icon">🎟️</div>
+        <div><small>BOOKING NUMBER</small><strong>{{ item.bookingNumber }}</strong><span>{{ item.bookingStatus }}</span></div>
+      </div>
+      <div class="summary-row"><span>Booking status</span><strong>{{ item.bookingStatus }}</strong></div>
+      <div class="summary-row payment-total-row"><span>Amount due</span><strong class="summary-total">{{ item.amountDue | currency:'LKR':'symbol-narrow':'1.2-2' }}</strong></div>
+      @if (item.paid) {
+        <div class="alert alert-success">✓ Payment already completed.</div>
+      } @else {
+        <button class="btn btn-success payment-submit-btn" type="button" [disabled]="paying()" (click)="openConfirm()">
+          <span>{{ paying() ? 'Processing...' : 'Pay securely' }}</span><span>→</span>
+        </button>
+      }
+      <div class="accepted-card-row"><span>VISA</span><span>MC</span><span>AMEX</span><span>SECURE</span></div>
+    </aside>
+  </div>
+}
+<app-confirm-dialog [open]="confirmOpen()" title="Confirm payment?" message="This will mark the booking payment as completed and confirm the booking." confirmText="Pay now" (confirm)="pay()" (cancel)="confirmOpen.set(false)" /> -->

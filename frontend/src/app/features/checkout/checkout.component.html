@@ -1,0 +1,25 @@
+<!-- <div class="page-header"><div><h1>Checkout</h1><p>Review selected seats, optional parking and attendee names before creating the booking.</p></div></div>
+<app-error-message [message]="error()" />
+<div class="grid grid-2">
+  <section class="card">
+    <h2 class="section-title">Attendees</h2>
+    <form [formGroup]="form">
+      <div formArrayName="attendees" class="grid">
+        @for (control of attendeeControls.controls; track $index) {
+          <div class="form-field"><label>Seat {{ state.seats()[$index].seatNumber | seatLabel }} attendee</label><input [formControlName]="$index"><span class="field-help">Frontend-only field for the BRD checkout FormArray; backend booking DTO does not store attendee names.</span>@if (control.touched && control.invalid) { <span class="field-error">Enter an attendee name.</span> }</div>
+        }
+      </div>
+    </form>
+  </section>
+  <aside class="card summary-panel">
+    <h2 class="section-title">Reservation Summary</h2>
+    <div class="summary-row"><span>Event</span><strong>{{ state.event()?.name }}</strong></div>
+    <div class="summary-row"><span>Seats</span><strong>{{ state.seatCount() }}</strong></div>
+    <div class="pill-list">@for (seat of state.seats(); track seat.seatId) { <span class="pill">{{ seat.seatNumber | seatLabel }}</span> }</div>
+    @if (state.parking(); as parking) { <div class="summary-row"><span>Parking</span><strong>{{ parking.slotNumber | slotCode:parking.zone }}</strong></div> }
+    @else { <div class="alert alert-info">No parking selected. Parking is optional.</div> }
+    <div class="summary-row"><span>Total</span><strong class="summary-total">{{ state.total() | currency:'LKR':'symbol-narrow':'1.2-2' }}</strong></div>
+    <div class="actions"><a class="btn btn-outline" [routerLink]="['/events', state.event()?.eventId, 'parking']">Back</a><button class="btn" type="button" [disabled]="loading()" (click)="openConfirm()">{{ loading() ? 'Creating...' : 'Create booking' }}</button></div>
+  </aside>
+</div>
+<app-confirm-dialog [open]="confirmOpen()" title="Create booking?" message="Seats and parking will be held for payment. Continue?" confirmText="Create booking" (confirm)="createBooking()" (cancel)="confirmOpen.set(false)" /> -->

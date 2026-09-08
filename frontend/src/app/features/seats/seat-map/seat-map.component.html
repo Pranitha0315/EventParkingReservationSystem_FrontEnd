@@ -1,0 +1,144 @@
+<section class="booking-progress" aria-label="Booking progress">
+  <a [routerLink]="['/events', eventId]" class="progress-step done"><span>1</span><div><b>Event</b><small>Chosen</small></div></a>
+  <div class="progress-step active"><span>2</span><div><b>Seats</b><small>Select now</small></div></div>
+  <div class="progress-step"><span>3</span><div><b>Parking</b><small>Optional</small></div></div>
+  <div class="progress-step"><span>4</span><div><b>Checkout</b><small>Review</small></div></div>
+</section>
+
+<div class="page-header seat-page-header">
+  <div>
+    <span class="eyebrow">{{ layoutLabel() }}</span>
+    <h1>Choose your seats</h1>
+    <p>{{ event()?.name || 'Event' }} · {{ layoutHint() }}</p>
+  </div>
+  <a class="btn btn-outline" [routerLink]="['/events', eventId]">Event details</a>
+</div>
+<app-error-message [message]="error()" [retryable]="true" (retry)="load()" />
+@if (loading()) { <app-loading-spinner label="Loading seat map..." /> }
+@else if (!seats().length) { <app-empty-state title="No seat map" message="An administrator has not created seats for this event yet." /> }
+@else {
+  <section class="seat-count-planner">
+    <div class="seat-count-copy">
+      <span class="seat-plan-number">1</span>
+      <div><strong>How many seats do you need?</strong><p>Choose a count and we will try to find that many available seats together. You can still change seats manually.</p></div>
+    </div>
+    <div class="seat-count-actions">
+      <div class="seat-count-buttons" aria-label="Seat count">
+        @for (count of seatCountOptions(); track count) {
+          <button type="button" [class.active]="requestedSeatCount() === count" (click)="setRequestedSeatCount(count)">{{ count }}</button>
+        }
+      </div>
+      <button class="btn seat-find-button" type="button" (click)="autoSelectRequested()" [disabled]="availableSeatCount() === 0">Find {{ requestedSeatCount() }} together</button>
+    </div>
+  </section>
+
+  <div class="seat-booking-layout v3-seat-booking-layout">
+    <section class="card venue-card v3-venue-card" [class]="'card venue-card v3-venue-card layout-' + layoutKind()">
+      <div class="venue-toolbar v3-venue-toolbar">
+        <div>
+          <strong>{{ event()?.name }}</strong>
+          <span>{{ layoutLabel() }} · {{ event()?.venueName }} · {{ availableSeatCount() }} available</span>
+        </div>
+        <div class="legend compact-legend">
+          <span class="legend-item"><i class="legend-dot available"></i>Available</span>
+          <span class="legend-item"><i class="legend-dot selected"></i>Your seat</span>
+          <span class="legend-item"><i class="legend-dot blocked"></i>Unavailable</span>
+        </div>
+      </div>
+
+      @switch (layoutKind()) {
+        @case ('concert') {
+          <div class="concert-layout v3-concert-layout">
+            <div class="concert-stage v3-concert-stage">
+              <div class="stage-orbit orbit-one"></div>
+              <div class="stage-orbit orbit-two"></div>
+              <div class="stage-core">♫<span>LIVE STAGE</span></div>
+            </div>
+            <div class="concert-zone-label">AUDIENCE · 360° CURVED VIEW</div>
+            <div class="concert-rows">
+              @for (row of seatRows(); track $index) {
+                <div class="concert-row">
+                  @for (seat of row; track seat.seatId; let seatIndex = $index) {
+                    <div class="seat-shell" [style.transform]="concertSeatTransform(seatIndex, row.length)">
+                      <app-seat-item [seat]="seat" [selected]="selected(seat)" (chosen)="toggle($event)" />
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+        @case ('sports') {
+          <div class="stadium-layout v3-stadium-layout">
+            <div class="stadium-label">NORTH STAND</div>
+            <div class="stadium-stand stadium-north">
+              @for (seat of sportsSection(0); track seat.seatId) { <app-seat-item [seat]="seat" [selected]="selected(seat)" (chosen)="toggle($event)" /> }
+            </div>
+            <div class="stadium-middle">
+              <div class="stadium-stand stadium-west">
+                @for (seat of sportsSection(1); track seat.seatId) { <app-seat-item [seat]="seat" [selected]="selected(seat)" (chosen)="toggle($event)" /> }
+              </div>
+              <div class="sports-field">
+                <div class="field-center-circle"></div>
+                <div class="field-line"></div>
+                <span>EVENT FIELD</span>
+              </div>
+              <div class="stadium-stand stadium-east">
+                @for (seat of sportsSection(2); track seat.seatId) { <app-seat-item [seat]="seat" [selected]="selected(seat)" (chosen)="toggle($event)" /> }
+              </div>
+            </div>
+            <div class="stadium-stand stadium-south">
+              @for (seat of sportsSection(3); track seat.seatId) { <app-seat-item [seat]="seat" [selected]="selected(seat)" (chosen)="toggle($event)" /> }
+            </div>
+            <div class="stadium-label">SOUTH STAND</div>
+          </div>
+        }
+        @case ('theatre') {
+          <div class="theatre-layout v3-theatre-layout">
+            <div class="theatre-stage"><span>STAGE / SCREEN</span></div>
+            <div class="theatre-rows">
+              @for (row of seatRows(); track $index) {
+                <div class="theatre-row">
+                  <span class="row-label">{{ $index + 1 }}</span>
+                  @for (seat of row; track seat.seatId) {
+                    <app-seat-item [seat]="seat" [selected]="selected(seat)" (chosen)="toggle($event)" />
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+        @default {
+          <div class="standard-layout">
+            <div class="premium-stage"><span>MAIN EVENT AREA</span></div>
+            <div class="standard-rows">
+              @for (row of seatRows(); track $index) {
+                <div class="standard-row">
+                  @for (seat of row; track seat.seatId) { <app-seat-item [seat]="seat" [selected]="selected(seat)" (chosen)="toggle($event)" /> }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      }
+
+      <div class="seat-map-help"><span>Tip</span> Select green seats manually anytime. The blue seats are yours.</div>
+    </section>
+
+    <aside class="card summary-panel seat-summary-card v3-seat-summary-card">
+      <div class="summary-icon">🎟️</div>
+      <span class="eyebrow">YOUR SEATS</span>
+      <h2 class="section-title">{{ state.seatCount() ? state.seatCount() + ' selected' : 'No seats yet' }}</h2>
+      <p class="muted">Requested: {{ requestedSeatCount() }} seat(s). Tap the map to adjust the suggestion.</p>
+      @if (!state.seats().length) {
+        <div class="selection-empty">Choose a seat count above, then press “Find together”, or tap a green seat.</div>
+      } @else {
+        <div class="pill-list selected-seat-pills">@for (seat of state.seats(); track seat.seatId) { <span class="pill">{{ seat.seatNumber | seatLabel }}</span> }</div>
+      }
+      <div class="summary-row"><span>Selected seats</span><strong>{{ state.seatCount() }}</strong></div>
+      <div class="summary-row"><span>Seat total</span><strong>{{ state.seatTotal() | currency:'LKR':'symbol-narrow':'1.2-2' }}</strong></div>
+      @if (state.seatCount() > 0) { <button class="seat-summary-clear" type="button" (click)="clearSelection()">Clear selected seats</button> }
+      <button class="btn btn-glow seat-continue-btn" type="button" [disabled]="state.seatCount() === 0" (click)="continue()"><span>Continue to parking</span><span>→</span></button>
+    </aside> 
+   </div>
+ }

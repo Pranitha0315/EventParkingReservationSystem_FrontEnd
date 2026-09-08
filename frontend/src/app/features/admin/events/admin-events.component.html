@@ -1,1 +1,23 @@
 
+<div class="page-header"><div><h1>Event Management</h1><p>Reactive form with venue/category requirements and future-date validation.</p></div></div>
+<app-error-message [message]="error()" />
+@if (success()) { <div class="alert alert-success">{{ success() }}</div> }
+<section class="card">
+  <h2>{{ editingId ? 'Edit event' : 'Create event' }}</h2>
+  <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+    <div class="form-field full"><label>Name</label><input formControlName="name">@if (form.controls.name.touched && form.controls.name.invalid) { <span class="field-error">Event name is required.</span> }</div>
+    <div class="form-field"><label>Venue</label><select formControlName="venueId"><option [ngValue]="0">Select venue</option>@for (venue of venues(); track venue.venueId) { <option [ngValue]="venue.venueId">{{ venue.name }} ({{ venue.totalCapacity }})</option> }</select>@if (form.controls.venueId.touched && form.controls.venueId.invalid) { <span class="field-error">Choose a venue.</span> }</div>
+    <div class="form-field"><label>Category</label><select formControlName="eventCategoryId"><option [ngValue]="0">Select category</option>@for (category of categories(); track category.eventCategoryId) { <option [ngValue]="category.eventCategoryId">{{ category.name }}</option> }</select>@if (form.controls.eventCategoryId.touched && form.controls.eventCategoryId.invalid) { <span class="field-error">Choose a category.</span> }</div>
+    <div class="form-field"><label>Date</label><input type="date" formControlName="eventDate">@if (form.controls.eventDate.touched && form.controls.eventDate.errors?.['pastDate']) { <span class="field-error">Event date cannot be in the past.</span> }</div>
+    <div class="form-field"><label>Capacity</label><input type="number" formControlName="capacity" min="1"></div>
+    <div class="form-field"><label>Start time</label><input type="time" formControlName="startTime"></div>
+    <div class="form-field"><label>End time</label><input type="time" formControlName="endTime"></div>
+    <div class="form-field"><label>Ticket price (LKR)</label><input type="number" formControlName="ticketPrice" min="0" step="0.01">@if (priceLocked()) { <span class="field-help">Locked because active bookings exist; backend also enforces this rule.</span> }</div>
+    <div class="form-field"><label>Parking fee (LKR)</label><input type="number" formControlName="parkingFee" min="0" step="0.01"></div>
+    <div class="form-field full"><div class="actions"><button class="btn" [disabled]="saving()">{{ saving() ? 'Saving...' : (editingId ? 'Update event' : 'Create event') }}</button>@if (editingId) { <button class="btn btn-outline" type="button" (click)="reset()">Cancel edit</button> }</div></div>
+  </form>
+</section>
+@if (loading()) { <app-loading-spinner label="Loading events..." /> }
+@else if (!events().length) { <app-empty-state title="No events" message="Create the first event above." /> }
+@else { <div class="table-wrap" style="margin-top:18px"><table><thead><tr><th>Event</th><th>Date & time</th><th>Venue</th><th>Category</th><th>Price</th><th>Capacity</th><th></th></tr></thead><tbody>@for (item of events(); track item.eventId) { <tr><td><strong>{{ item.name }}</strong></td><td>{{ item.eventDate }}<br>{{ item.startTime | slice:0:5 }}–{{ item.endTime | slice:0:5 }}</td><td>{{ item.venueName }}</td><td>{{ item.categoryName }}</td><td>{{ item.ticketPrice | currency:'LKR':'symbol-narrow':'1.2-2' }}</td><td>{{ item.capacity }}</td><td><div class="actions" style="margin:0"><button class="btn btn-outline btn-small" (click)="edit(item)">Edit</button><button class="btn btn-danger btn-small" (click)="askDelete(item)">Delete</button></div></td></tr> }</tbody></table></div> }
+<app-confirm-dialog [open]="confirmOpen()" title="Delete event?" [message]="deleting ? ('Delete ' + deleting.name + '? The API rejects deletion when active bookings exist.') : ''" confirmText="Delete" [danger]="true" (confirm)="remove()" (cancel)="confirmOpen.set(false)" />

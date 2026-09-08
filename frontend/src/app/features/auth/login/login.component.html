@@ -1,1 +1,258 @@
+<section
+  class="v4-login-page"
+  [class.admin-mode]="adminMode"
+  [class.has-login-error]="!!error()"
+  (pointermove)="trackMascot($event)"
+  (pointerleave)="resetMascot()"
+>
+  <div class="v4-orbit v4-orbit-one" aria-hidden="true"></div>
+  <div class="v4-orbit v4-orbit-two" aria-hidden="true"></div>
+
+  @if (adminMode) {
+    <span class="v4-floating-token token-ticket admin-token" aria-hidden="true">LIVE</span>
+    <span class="v4-floating-token token-seat admin-token" aria-hidden="true">REV</span>
+    <span class="v4-floating-token token-park admin-token" aria-hidden="true">OPS</span>
+  } @else {
+    <span class="v4-floating-token token-ticket" aria-hidden="true">TICKET</span>
+    <span class="v4-floating-token token-seat" aria-hidden="true">A12</span>
+    <span class="v4-floating-token token-park" aria-hidden="true">P</span>
+  }
+
+  <div class="v4-login-layout">
+    @if (adminMode) {
+      <aside class="v5-admin-story" aria-label="Administrator control center overview">
+        <div class="v5-admin-topline">
+          <span class="v5-admin-lock" aria-hidden="true">◆</span>
+          <div>
+            <small>AUTHORIZED ACCESS</small>
+            <strong>Reservation Control Center</strong>
+          </div>
+        </div>
+
+        <div class="v5-admin-copy">
+          <span class="v5-admin-kicker">ADMIN OPERATIONS · ONE CONTROL POINT</span>
+          <h1>Run the whole<br><em>event operation.</em></h1>
+          <p>Monitor bookings, manage event capacity, control parking inventory and follow revenue from one secure workspace.</p>
+        </div>
+
+        <div class="v5-admin-capabilities" aria-label="Administrator capabilities">
+          <article>
+            <span>01</span>
+            <div><strong>Live Operations</strong><small>Watch bookings, seats and parking availability</small></div>
+            <b>LIVE</b>
+          </article>
+          <article>
+            <span>02</span>
+            <div><strong>Events & Venues</strong><small>Manage schedules, layouts and capacity</small></div>
+            <b>MANAGE</b>
+          </article>
+          <article>
+            <span>03</span>
+            <div><strong>Bookings & Payments</strong><small>Review reservations and payment activity</small></div>
+            <b>TRACK</b>
+          </article>
+          <article>
+            <span>04</span>
+            <div><strong>Revenue Monitoring</strong><small>See monthly performance and booking trends</small></div>
+            <b>ANALYZE</b>
+          </article>
+        </div>
+
+        <div class="v5-admin-status-strip">
+          <div><span class="pulse-dot" aria-hidden="true"></span><small>System status</small><strong>Operational</strong></div>
+          <div><small>Access level</small><strong>Administrator</strong></div>
+          <div><small>Workspace</small><strong>Secure portal</strong></div>
+        </div>
+      </aside>
+    } @else {
+      <aside class="v4-login-story" aria-label="Booking journey preview">
+        <a class="v4-story-brand" routerLink="/login">
+          <span>EP</span>
+          <strong>Event & Parking</strong>
+        </a>
+
+        <div class="v4-story-copy">
+          <span class="v4-kicker">ONE LOGIN · COMPLETE JOURNEY</span>
+          <h1>Book the event.<br><em>We handle the rest.</em></h1>
+          <p>Find your event, pick the best seats, reserve parking and complete payment from one smooth customer flow.</p>
+        </div>
+
+        <div class="v4-story-steps" aria-hidden="true">
+          <div class="active"><b>01</b><span>Discover</span></div>
+          <i></i>
+          <div><b>02</b><span>Seats</span></div>
+          <i></i>
+          <div><b>03</b><span>Parking</span></div>
+          <i></i>
+          <div><b>04</b><span>Pay</span></div>
+        </div>
+
+        <div class="v4-mini-ticket" aria-hidden="true">
+          <div>
+            <small>NEXT EXPERIENCE</small>
+            <strong>Live event night</strong>
+            <span>Seat + parking in one booking</span>
+          </div>
+          <b>EP</b>
+        </div>
+      </aside>
+    }
+
+    <div class="v4-login-card-wrap">
+      @if (!adminMode) {
+        <div
+          class="v4-mascot"
+          [class.email-active]="emailFocused()"
+          [class.password-active]="passwordFocused()"
+          [class.password-peek]="passwordFocused() && showPassword()"
+          [class.loading-active]="loading()"
+          [class.error-active]="!!error()"
+          aria-hidden="true"
+        >
+          <div class="v4-mascot-shadow"></div>
+          <div class="v4-mascot-body">
+            <span class="v4-ear ear-left"></span>
+            <span class="v4-ear ear-right"></span>
+            <div class="v4-face">
+              <span class="v4-brow brow-left"></span>
+              <span class="v4-brow brow-right"></span>
+              <span class="v4-eye eye-left"><i [style.transform]="'translate(' + lookX() + 'px,' + lookY() + 'px)'"></i></span>
+              <span class="v4-eye eye-right"><i [style.transform]="'translate(' + lookX() + 'px,' + lookY() + 'px)'"></i></span>
+              <span class="v4-nose"></span>
+              <span class="v4-mouth"></span>
+              <span class="v4-cheek cheek-left"></span>
+              <span class="v4-cheek cheek-right"></span>
+            </div>
+            <span class="v4-arm arm-left"><i></i></span>
+            <span class="v4-arm arm-right"><i></i></span>
+            <div class="v4-neck-pass"><span>EP</span></div>
+          </div>
+          <div class="v4-mascot-status">
+            @if (passwordFocused() && showPassword()) {
+              <b>Peeking mode</b><span>I will only take a tiny look 👀</span>
+            } @else if (passwordFocused()) {
+              <b>Password privacy</b><span>Eyes covered. Your secret stays secret.</span>
+            } @else if (emailFocused()) {
+              <b>Hello there!</b><span>I am following your sign-in.</span>
+            } @else {
+              <b>Ready when you are</b><span>Sign in to start your booking.</span>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="v4-admin-mark" aria-hidden="true">
+          <div class="v4-admin-shield"><span>EP</span></div>
+          <p>Administrator access</p>
+        </div>
+      }
+
+      <div class="v4-login-card">
+        <div class="v4-account-switch" aria-label="Choose login type">
+          <a routerLink="/login" [class.active]="!adminMode">Customer</a>
+          <a routerLink="/admin/login" [class.active]="adminMode">Admin</a>
+        </div>
+
+        <header class="v4-card-header">
+          <span class="v4-card-eyebrow">{{ adminMode ? 'ADMIN PORTAL' : 'WELCOME BACK' }}</span>
+          <h2>{{ adminMode ? 'Operations sign in' : 'Sign in to continue' }}</h2>
+          <p>{{ adminMode ? 'Enter authorized administrator credentials to open the reservation control center.' : 'Your next event is only a few clicks away.' }}</p>
+        </header>
+
+        <app-error-message [message]="error()" />
+        @if (message()) {
+          <div class="alert alert-success">{{ message() }}</div>
+        }
+
+        <form #loginForm="ngForm" (ngSubmit)="submit(loginForm)" novalidate class="v4-login-form">
+          <div class="v4-field">
+            <label for="email">Email address</label>
+            <div class="v4-input-shell" [class.focused]="emailFocused()" [class.valid]="email.valid && email.dirty">
+              <span class="v4-input-icon" aria-hidden="true">@</span>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                [(ngModel)]="model.email"
+                #email="ngModel"
+                required
+                email
+                autocomplete="email"
+                placeholder="you@example.com"
+                (focus)="focusEmail()"
+                (blur)="blurEmail()"
+              >
+              @if (email.valid && email.dirty) {
+                <span class="v4-input-check" aria-hidden="true">✓</span>
+              }
+            </div>
+            @if (email.touched && email.invalid) {
+              <span class="field-error">Enter a valid email address.</span>
+            }
+          </div>
+
+          <div class="v4-field">
+            <div class="v4-label-row">
+              <label for="password">Password</label>
+              @if (!adminMode) {
+                <a routerLink="/forgot-password">Forgot password?</a>
+              }
+            </div>
+            <div class="v4-input-shell v4-password-shell" [class.focused]="passwordFocused()" [class.visible]="showPassword()">
+              <span class="v4-input-icon lock-icon" aria-hidden="true">●</span>
+              <input
+                id="password"
+                [type]="showPassword() ? 'text' : 'password'"
+                name="password"
+                [(ngModel)]="model.password"
+                #password="ngModel"
+                required
+                minlength="8"
+                autocomplete="current-password"
+                placeholder="Enter your password"
+                (focus)="focusPassword()"
+                (blur)="blurPassword()"
+              >
+              <button
+                class="v4-eye-toggle"
+                type="button"
+                (mousedown)="$event.preventDefault()"
+                (click)="togglePassword()"
+                [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+              >
+                <span [class.open]="showPassword()"></span>
+              </button>
+            </div>
+            @if (password.touched && password.invalid) {
+              <span class="field-error">Password must contain at least 8 characters.</span>
+            }
+          </div>
+
+          <button class="v4-login-button" type="submit" [disabled]="loginForm.invalid || loading()">
+            @if (loading()) {
+              <span class="v4-button-loader" aria-hidden="true"></span>
+              <span>Signing in...</span>
+            } @else {
+              <span>{{ adminMode ? 'Open control center' : 'Enter my event space' }}</span>
+              <b aria-hidden="true">→</b>
+            }
+          </button>
+        </form>
+
+        @if (!adminMode) {
+          <div class="v4-card-footer">
+            <p>New to Event & Parking? <a routerLink="/register">Create an account</a></p>
+            <button type="button" (click)="resendVerification()" [disabled]="loading()">Resend verification email</button>
+          </div>
+        } @else {
+          <div class="v4-card-footer v5-admin-footer">
+            <p>Customer booking access? <a routerLink="/login">Go to customer login</a></p>
+            <small>Administrator access is restricted to authorized staff.</small>
+          </div>
+        }
+      </div>
+
+      <p class="v4-secure-note"><span>✓</span> {{ adminMode ? 'Restricted administrator authentication' : 'Secure authentication' }} · Existing backend API unchanged</p>
+    </div>
+  </div>
+</section>
 

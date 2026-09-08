@@ -1,0 +1,169 @@
+<section class="v5-register-page">
+  <div class="v5-register-orbit orbit-a" aria-hidden="true"></div>
+  <div class="v5-register-orbit orbit-b" aria-hidden="true"></div>
+  <span class="v5-register-float float-seat" aria-hidden="true">A12</span>
+  <span class="v5-register-float float-parking" aria-hidden="true">P08</span>
+  <span class="v5-register-float float-ticket" aria-hidden="true">PASS</span>
+
+  <div class="v5-register-layout">
+    <aside class="v5-register-story" aria-label="Account creation preview">
+      <a class="v5-register-brand" routerLink="/login">
+        <span>EP</span>
+        <strong>Event & Parking</strong>
+      </a>
+
+      <div class="v5-register-copy">
+        <span class="v5-register-kicker">YOUR JOURNEY STARTS HERE</span>
+        <h1>Create your<br><em>event pass.</em></h1>
+        <p>One account keeps your event tickets, selected seats, parking reservations and payment history together.</p>
+      </div>
+
+      <div class="v5-live-pass" [class.name-active]="activeField() === 'name'" [class.email-active]="activeField() === 'email'">
+        <div class="v5-pass-top">
+          <div class="v5-pass-mark">{{ initials() }}</div>
+          <div>
+            <small>MEMBER ACCESS</small>
+            <strong>Event & Parking Pass</strong>
+          </div>
+          <span>ACTIVE</span>
+        </div>
+        <div class="v5-pass-main">
+          <div class="v5-pass-avatar">{{ initials() }}</div>
+          <div class="v5-pass-person">
+            <small>PASS HOLDER</small>
+            <strong>{{ displayName() }}</strong>
+            <span>{{ displayEmail() }}</span>
+          </div>
+          <div class="v5-pass-code" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+        </div>
+        <div class="v5-pass-bottom">
+          <span><small>ACCESS</small><strong>Events</strong></span>
+          <span><small>SEATS</small><strong>Choose</strong></span>
+          <span><small>PARKING</small><strong>Reserve</strong></span>
+          <span><small>PAYMENTS</small><strong>Secure</strong></span>
+        </div>
+      </div>
+
+      <div class="v5-register-benefits">
+        <div><span>✓</span><p><strong>Faster checkout</strong><small>Your booking flow stays connected.</small></p></div>
+        <div><span>✓</span><p><strong>Everything in one place</strong><small>Bookings, receipts and parking history.</small></p></div>
+        <div><span>✓</span><p><strong>Secure account</strong><small>Password rules match the backend validation.</small></p></div>
+      </div>
+    </aside>
+
+    <div class="v5-register-card-wrap">
+      <div class="v5-register-card">
+        <header class="v5-register-card-header">
+          <div>
+            <span>NEW CUSTOMER</span>
+            <h2>Build your account</h2>
+            <p>Complete your details and your event pass is ready.</p>
+          </div>
+          <div class="v5-register-progress" [attr.aria-label]="progressPercent() + '% complete'">
+            <strong>{{ progressPercent() }}%</strong>
+            <span><i [style.width.%]="progressPercent()"></i></span>
+            <small>Profile complete</small>
+          </div>
+        </header>
+
+        <app-error-message [message]="error()" />
+        @if (success()) {
+          <div class="alert alert-success v5-register-success">{{ success() }}</div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="v5-register-form" novalidate>
+          <div class="v5-register-field full">
+            <label for="register-name">Full name</label>
+            <div class="v5-register-input" [class.focused]="activeField() === 'name'" [class.valid]="form.controls.name.valid && form.controls.name.dirty">
+              <span aria-hidden="true">N</span>
+              <input id="register-name" formControlName="name" autocomplete="name" placeholder="Your full name" (focus)="setActiveField('name')" (blur)="setActiveField('')">
+              @if (form.controls.name.valid && form.controls.name.dirty) { <b aria-hidden="true">✓</b> }
+            </div>
+            @if (form.controls.name.touched && form.controls.name.invalid) {
+              <span class="field-error">Name must contain at least 2 characters.</span>
+            }
+          </div>
+
+          <div class="v5-register-field full">
+            <label for="register-email">Email address</label>
+            <div class="v5-register-input" [class.focused]="activeField() === 'email'" [class.valid]="form.controls.email.valid && form.controls.email.dirty">
+              <span aria-hidden="true">@</span>
+              <input id="register-email" type="email" formControlName="email" autocomplete="email" placeholder="you@example.com" (focus)="setActiveField('email')" (blur)="setActiveField('')">
+              @if (form.controls.email.valid && form.controls.email.dirty) { <b aria-hidden="true">✓</b> }
+            </div>
+            @if (form.controls.email.touched && form.controls.email.errors?.['duplicate']) {
+              <span class="field-error">This email is already registered.</span>
+            } @else if (form.controls.email.touched && form.controls.email.invalid) {
+              <span class="field-error">Enter a valid email address.</span>
+            }
+          </div>
+
+          <div class="v5-register-field full">
+            <label for="register-phone">Phone number</label>
+            <div class="v5-register-input" [class.focused]="activeField() === 'phone'" [class.valid]="form.controls.phone.valid && form.controls.phone.dirty">
+              <span aria-hidden="true">#</span>
+              <input id="register-phone" formControlName="phone" inputmode="numeric" maxlength="10" autocomplete="tel" placeholder="0771234567" (focus)="setActiveField('phone')" (blur)="setActiveField('')">
+              @if (form.controls.phone.valid && form.controls.phone.dirty) { <b aria-hidden="true">✓</b> }
+            </div>
+            @if (form.controls.phone.touched && form.controls.phone.invalid) {
+              <span class="field-error">Phone must contain exactly 10 digits.</span>
+            }
+          </div>
+
+          <div class="v5-register-field">
+            <label for="register-password">Password</label>
+            <div class="v5-register-input password-input" [class.focused]="activeField() === 'password'">
+              <span aria-hidden="true">●</span>
+              <input id="register-password" [type]="showPassword() ? 'text' : 'password'" formControlName="password" autocomplete="new-password" placeholder="Create password" (focus)="setActiveField('password')" (blur)="setActiveField('')">
+              <button type="button" (mousedown)="$event.preventDefault()" (click)="togglePassword()" [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
+                {{ showPassword() ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+            <div class="v5-password-strength" [class.score-1]="passwordScore() === 1" [class.score-2]="passwordScore() === 2" [class.score-3]="passwordScore() === 3" [class.score-4]="passwordScore() === 4">
+              <div><i></i><i></i><i></i><i></i></div><span>{{ passwordLabel() }}</span>
+            </div>
+            @if (form.controls.password.touched && form.controls.password.invalid) {
+              <span class="field-error">Use 8+ characters with a number and special character.</span>
+            }
+          </div>
+
+          <div class="v5-register-field">
+            <label for="register-confirm-password">Confirm password</label>
+            <div class="v5-register-input password-input">
+              <span aria-hidden="true">✓</span>
+              <input id="register-confirm-password" [type]="showConfirmPassword() ? 'text' : 'password'" formControlName="confirmPassword" autocomplete="new-password" placeholder="Repeat password">
+              <button type="button" (mousedown)="$event.preventDefault()" (click)="toggleConfirmPassword()" [attr.aria-label]="showConfirmPassword() ? 'Hide confirm password' : 'Show confirm password'">
+                {{ showConfirmPassword() ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+            @if (form.controls.confirmPassword.touched && (form.controls.confirmPassword.invalid || form.errors?.['passwordMismatch'])) {
+              <span class="field-error">Passwords must match.</span>
+            }
+          </div>
+
+          <div class="v5-register-rule full">
+            <span aria-hidden="true">i</span>
+            <p>Use an email you can access. Verification may be required before your first login.</p>
+          </div>
+
+          <button class="v5-register-submit full" type="submit" [disabled]="loading() || form.invalid">
+            @if (loading()) {
+              <span class="v4-button-loader" aria-hidden="true"></span>
+              <strong>Creating your pass...</strong>
+            } @else {
+              <strong>Create my event pass</strong>
+              <b aria-hidden="true">→</b>
+            }
+          </button>
+        </form>
+
+        <div class="v5-register-footer">
+          <p>Already have an account? <a routerLink="/login">Sign in instead</a></p>
+          <span>Secure customer registration · Existing backend API unchanged</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

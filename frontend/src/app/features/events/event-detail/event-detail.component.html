@@ -1,1 +1,23 @@
 
+<app-error-message [message]="error()" [retryable]="true" (retry)="load()" />
+@if (loading()) { <app-loading-spinner label="Loading event..." /> }
+@else if (event(); as item) {
+  <div class="page-header"><div><h1>{{ item.name }}</h1><p>{{ item.categoryName }} · {{ item.venueName }}</p></div><a class="btn btn-outline" routerLink="/events">Back to events</a></div>
+  <section class="grid grid-2">
+    <article class="card">
+      <h2 class="section-title">Event Details</h2>
+      <div class="summary-row"><span>Date</span><strong>{{ item.eventDate }}</strong></div>
+      <div class="summary-row"><span>Time</span><strong>{{ item.startTime | slice:0:5 }} – {{ item.endTime | slice:0:5 }}</strong></div>
+      <div class="summary-row"><span>Venue</span><strong>{{ item.venueName }}</strong></div>
+      <div class="summary-row"><span>Category</span><strong>{{ item.categoryName }}</strong></div>
+      <div class="summary-row"><span>Capacity</span><strong>{{ item.capacity | number }}</strong></div>
+    </article>
+    <article class="card">
+      <h2 class="section-title">Reservation</h2>
+      <div class="summary-row"><span>Ticket price</span><strong>{{ item.ticketPrice | currency:'LKR':'symbol-narrow':'1.2-2' }}</strong></div>
+      <div class="summary-row"><span>Parking fee</span><strong>{{ item.parkingFee | currency:'LKR':'symbol-narrow':'1.2-2' }}</strong></div>
+      <p class="muted">Choose one or more available seats. Parking is optional.</p>
+      <a class="btn" [routerLink]="['/events', item.eventId, 'seats']">Choose seats</a>
+    </article>
+  </section>
+}

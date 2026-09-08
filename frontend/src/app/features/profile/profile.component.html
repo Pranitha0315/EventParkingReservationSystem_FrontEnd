@@ -1,0 +1,87 @@
+<div class="page-header profile-page-header">
+  <div>
+    <span class="eyebrow">CUSTOMER PROFILE</span>
+    <h1>My Profile</h1>
+    <p>View your account details, active state and choose one of the default avatars.</p>
+  </div>
+</div>
+<app-error-message [message]="error()" [retryable]="true" (retry)="load()" />
+@if (success()) { <div class="alert alert-success">{{ success() }}</div> }
+@if (loading()) { <app-loading-spinner label="Loading profile..." /> }
+@else if (customer(); as item) {
+  <section class="profile-v7-layout">
+    <aside class="card profile-v7-identity">
+      <div class="profile-v7-avatar-frame">
+        <img [src]="selectedAvatarSrc()" [alt]="item.name + ' selected avatar'">
+        <span class="profile-v7-online-dot" [class.inactive]="item.status.toLowerCase() === 'deactivated'"></span>
+      </div>
+      <h2>{{ item.name }}</h2>
+      <p>{{ item.email }}</p>
+      <div class="profile-v7-status-line">
+        <app-status-badge [status]="item.status" />
+        <strong>{{ accountStateText(item.status) }}</strong>
+      </div>
+
+      <div class="profile-v7-avatar-picker">
+        <span class="eyebrow">CHOOSE YOUR AVATAR</span>
+        <p>No photo upload needed — pick one and it becomes your profile image.</p>
+        <div class="profile-v7-avatar-options" role="group" aria-label="Choose profile avatar">
+          @for (avatar of avatars; track avatar.id) {
+            <button
+              type="button"
+              class="profile-v7-avatar-option"
+              [class.active]="selectedAvatarId() === avatar.id"
+              [attr.aria-pressed]="selectedAvatarId() === avatar.id"
+              (click)="chooseAvatar(avatar.id)">
+              <img [src]="avatar.src" [alt]="avatar.label + ' avatar'">
+              <span>{{ avatar.label }}</span>
+              @if (selectedAvatarId() === avatar.id) { <i>✓</i> }
+            </button>
+          }
+        </div>
+        @if (avatarMessage()) { <small class="profile-v7-avatar-message">{{ avatarMessage() }}</small> }
+      </div>
+    </aside>
+
+    <div class="profile-v7-main">
+      <section class="card profile-v7-details-card">
+        <div class="profile-section-heading">
+          <div><span class="eyebrow">YOUR DETAILS</span><h2>Account information</h2></div>
+          <div class="profile-v7-state-pill" [class.inactive]="item.status.toLowerCase() === 'deactivated'">
+            <span></span>{{ item.status.toLowerCase() === 'deactivated' ? 'Inactive' : 'Active' }}
+          </div>
+        </div>
+        <div class="profile-v7-detail-grid">
+          <article><small>Customer ID</small><strong>#{{ item.customerId }}</strong><span>Unique account number</span></article>
+          <article><small>Phone</small><strong>{{ item.phone }}</strong><span>Primary contact</span></article>
+          <article><small>Email</small><strong>{{ item.email }}</strong><span>{{ item.emailVerified ? 'Verified email' : 'Verification pending' }}</span></article>
+          <article><small>Total bookings</small><strong>{{ item.bookingCount }}</strong><span>Bookings on this account</span></article>
+          <article><small>Joined</small><strong>{{ item.createdAtUtc | date:'mediumDate' }}</strong><span>Member since</span></article>
+          <article><small>Account state</small><strong>{{ accountStateText(item.status) }}</strong><span>{{ item.status }}</span></article>
+        </div>
+      </section>
+
+      <section class="card profile-v7-edit-card">
+        <div class="profile-section-heading">
+          <div><span class="eyebrow">EDIT PROFILE</span><h2>Personal information</h2></div>
+        </div>
+        <form [formGroup]="form" (ngSubmit)="save()" class="profile-edit-form profile-v7-edit-form">
+          <div class="form-field">
+            <label>Name</label>
+            <input formControlName="name" autocomplete="name">
+            @if (form.controls.name.touched && form.controls.name.invalid) { <span class="field-error">Enter at least 2 characters.</span> }
+          </div>
+          <div class="form-field">
+            <label>Phone</label>
+            <input formControlName="phone" maxlength="10" inputmode="numeric" autocomplete="tel">
+            @if (form.controls.phone.touched && form.controls.phone.invalid) { <span class="field-error">Phone must contain exactly 10 digits.</span> }
+          </div>
+          <div class="profile-save-row">
+            <span>Email and account status are controlled by the system.</span>
+            <button class="btn" [disabled]="saving()">{{ saving() ? 'Saving...' : 'Save changes' }}</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </section>
+}

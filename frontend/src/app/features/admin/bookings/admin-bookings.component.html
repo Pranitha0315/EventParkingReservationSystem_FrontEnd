@@ -1,0 +1,77 @@
+<div class="page-header">
+  <div><span class="eyebrow">ADMIN · BOOKINGS</span><h1>Booking Management</h1><p>View event bookings and cancel with a customer-facing reason when required.</p></div>
+</div>
+<app-error-message [message]="error()" />
+@if (success()) { <div class="alert alert-success">{{ success() }}</div> }
+
+<section class="card card-flat admin-booking-filter">
+  <div class="form-field"><label>Event</label><select name="eventId" [(ngModel)]="eventId" (ngModelChange)="load()"><option [ngValue]="0">Select event</option>@for (event of events(); track event.eventId) { <option [ngValue]="event.eventId">{{ event.name }} · {{ event.eventDate }}</option> }</select></div>
+</section>
+
+@if (loading()) { <app-loading-spinner label="Loading event bookings..." /> }
+@else if (eventId && !bookings().length) { <app-empty-state title="No bookings" message="There are no bookings for this event." /> }
+@else if (bookings().length) {
+  <div class="table-wrap admin-booking-table" style="margin-top:18px">
+    <table>
+      <thead><tr><th>Booking</th><th>Customer</th><th>Status</th><th>Seats</th><th>Parking</th><th>Total</th><th>Created</th><th></th></tr></thead>
+      <tbody>
+        @for (booking of bookings(); track booking.bookingId) {
+          <tr>
+            <td><strong>{{ booking.bookingNumber }}</strong></td>
+            <td>#{{ booking.customerId }}</td>
+            <td><app-status-badge [status]="booking.status" /></td>
+            <td>{{ booking.seats.length }}</td>
+            <td>{{ booking.parking?.slotNumber || '—' }}</td>
+            <td>{{ booking.totalAmount | currency:'LKR':'symbol-narrow':'1.2-2' }}</td>
+            <td>{{ booking.createdAtUtc | date:'short' }}</td>
+            <td>@if (booking.status === 'Pending' || booking.status === 'Confirmed') { <button class="btn btn-danger btn-small" (click)="askCancel(booking)">Cancel with reason</button> }</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+@if (cancelOpen()) {
+  @if (selected; as booking) {
+  <div class="admin-cancel-backdrop" role="presentation">
+    <section class="admin-cancel-dialog" role="dialog" aria-modal="true" aria-labelledby="cancel-booking-title">
+      <div class="admin-cancel-icon">!</div>
+      <div class="admin-cancel-heading">
+        <span class="eyebrow">CUSTOMER NOTIFICATION</span>
+        <h2 id="cancel-booking-title">Cancel {{ booking.bookingNumber }}?</h2>
+        <p>Seats and parking will be released. Add the reason that the customer should see in their notification.</p>
+      </div>
+
+      <div class="admin-cancel-booking-summary">
+        <div><small>Customer</small><strong>#{{ booking.customerId }}</strong></div>
+        <div><small>Event</small><strong>{{ booking.eventName }}</strong></div>
+        <div><small>Amount</small><strong>{{ booking.totalAmount | currency:'LKR':'symbol-narrow':'1.2-2' }}</strong></div>
+      </div>
+
+      <div class="admin-cancel-reason-chips">
+        @for (reason of cancellationTemplates; track reason) {
+          <button type="button" [class.active]="cancellationReason === reason" (click)="useReason(reason)">{{ reason }}</button>
+        }
+      </div>
+
+      <div class="form-field admin-cancel-reason-field">
+        <label>Cancellation reason <span>*</span></label>
+        <textarea name="cancellationReason" [(ngModel)]="cancellationReason" maxlength="300" rows="4" placeholder="Example: The organizer cancelled the event due to a venue issue."></textarea>
+        <div class="admin-cancel-field-meta"><span>This reason is sent with the cancellation request for the customer notification.</span><strong>{{ cancellationReason.length }}/300</strong></div>
+        @if (reasonError()) { <span class="field-error">{{ reasonError() }}</span> }
+      </div>
+
+      <div class="admin-cancel-preview">
+        <span>🔔</span>
+        <div><small>CUSTOMER WILL SEE</small><strong>Booking {{ booking.bookingNumber }} cancelled</strong><p>{{ cancellationReason || 'Your cancellation reason will appear here.' }}</p></div>
+      </div>
+
+      <div class="admin-cancel-actions">
+        <button class="btn btn-outline" type="button" [disabled]="cancelling()" (click)="closeCancel()">Keep booking</button>
+        <button class="btn btn-danger" type="button" [disabled]="cancelling()" (click)="cancel()">{{ cancelling() ? 'Cancelling...' : 'Cancel & notify customer' }}</button>
+      </div>
+    </section>
+  </div>
+}
+}

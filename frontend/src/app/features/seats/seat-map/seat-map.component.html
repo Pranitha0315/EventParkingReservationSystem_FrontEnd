@@ -139,6 +139,6 @@
       <div class="summary-row"><span>Seat total</span><strong>{{ state.seatTotal() | currency:'LKR':'symbol-narrow':'1.2-2' }}</strong></div>
       @if (state.seatCount() > 0) { <button class="seat-summary-clear" type="button" (click)="clearSelection()">Clear selected seats</button> }
       <button class="btn btn-glow seat-continue-btn" type="button" [disabled]="state.seatCount() === 0" (click)="continue()"><span>Continue to parking</span><span>→</span></button>
-    </aside>
-  </div>
-} -->
+    </aside> 
+   </div>
+ } -->

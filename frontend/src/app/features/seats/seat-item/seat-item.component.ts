@@ -9,7 +9,7 @@ import { Seat } from '../../../core/models/seat.model';
   selector: 'app-seat-item',
   standalone: true,
   imports: [NgClass, SeatLabelPipe, SeatStatusDirective],
-  template: ``
+  template: `<button type="button" class="seat-button" [appSeatStatus]="displayStatus" [ngClass]="{ selected: selected, blocked: seat.status !== 'Available' }" [disabled]="seat.status !== 'Available'" [attr.aria-label]="ariaLabel" (click)="chosen.emit(seat)">{{ seat.seatNumber | seatLabel }}<span class="sub">{{ selected ? 'Selected' : seat.status }}</span></button>`
 })
 export class SeatItemComponent {
  @Input({ required: true }) seat!: Seat;

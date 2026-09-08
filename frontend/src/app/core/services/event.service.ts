@@ -6,7 +6,7 @@ import { MessageResponse } from '../models/auth.model';
 import { EventFilters, EventItem, EventRequest } from '../models/event.model';
 
 @Injectable({ providedIn: 'root' })
-export class EventService {
+export class EventService { 
  private readonly http = inject(HttpClient);
   private readonly url = `${environment.apiUrl}/events`;
 

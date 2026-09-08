@@ -6,7 +6,7 @@ import { forkJoin } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventService } from '../../../core/services/event.service';
 import { VenueService } from '../../../core/services/venue.service';
-// import { CategoryService } from '../../../core/services/category.service';
+import { CategoryService } from '../../../core/services/category.service';
 import { apiErrorMessage } from '../../../core/utils/api-error';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ErrorMessageComponent } from '../../../shared/components/error-message/error-message.component';
@@ -25,7 +25,7 @@ import { Venue } from '../../../core/models/venue.model';
 export class EventListComponent {
   private readonly eventService = inject(EventService);
   private readonly venueService = inject(VenueService);
-  // private readonly categoryService = inject(CategoryService);
+  private readonly categoryService = inject(CategoryService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
@@ -36,7 +36,7 @@ export class EventListComponent {
   readonly loading = signal(true);
   readonly error = signal('');
   filters = { name: '', date: '', venueId: '', categoryId: '' };
-  categoryService: any;
+
 
   constructor() {
     forkJoin({ venues: this.venueService.getAll(), categories: this.categoryService.getAll() })

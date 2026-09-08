@@ -1,3 +1,4 @@
+
 import { computed, Injectable, signal } from '@angular/core';
 import { EventItem } from '../models/event.model';
 import { ParkingSlot } from '../models/parking.model';
@@ -61,3 +62,4 @@ export class BookingStateService {
     this.parkingSignal.set(null);
   }
 }
+

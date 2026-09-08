@@ -61,20 +61,20 @@ export class ParkingMapComponent implements OnInit {
     });
   }
 
-  // selected(slot: ParkingSlot): boolean {
-  //   return this.state.parking()
-  //   ?slot.parkingSlotId === slot.parkingSlotId;
-  // }
+  selected(slot: ParkingSlot): boolean {
+    return this.state.parking()
+    ?.parkingSlotId === slot.parkingSlotId
+  }
 
   choose(slot: ParkingSlot): void {
     if (slot.status !== 'Available') return;
-    // this.state.setParking(this.selected(slot) ? null : slot);
+    this.state.setParking(this.selected(slot) ? null : slot);
   }
 
   continue(): void { void this.router.navigate(['/checkout']); }
 
   skipParking(): void {
-    // this.state.setParking(null);
+    this.state.setParking(null);
     this.continue();
   }
 

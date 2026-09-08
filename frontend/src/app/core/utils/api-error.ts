@@ -1,3 +1,4 @@
+
 import { HttpErrorResponse } from '@angular/common/http';
 
 export function apiErrorMessage(error: unknown): string {
@@ -9,3 +10,4 @@ export function apiErrorMessage(error: unknown): string {
   }
   return 'Something went wrong. Please try again.';
 }
+

@@ -1,0 +1,42 @@
+<div class="page-header"><div><h1>Seat & Parking Layouts</h1><p>Create and maintain the seat map and parking slots for each event.</p></div></div>
+<app-error-message [message]="error()" />@if (success()) { <div class="alert alert-success">{{ success() }}</div> }
+<section class="card card-flat"><div class="form-field"><label>Event</label><select name="eventId" [(ngModel)]="eventId" (ngModelChange)="loadLayouts()"><option [ngValue]="0">Select event</option>@for (event of events(); track event.eventId) { <option [ngValue]="event.eventId">{{ event.name }} · {{ event.eventDate }}</option> }</select></div></section>
+@if (loading()) { <app-loading-spinner label="Loading layouts..." /> }
+@else if (eventId) {
+  <div class="grid grid-2" style="margin-top:18px">
+    <section class="card">
+      <h2>Seat Map</h2>
+      @if (!seats().length) {
+        <form #seatForm="ngForm" (ngSubmit)="createSeats(seatForm)" class="form-grid">
+          <div class="form-field"><label>Rows</label><input type="number" name="rows" [(ngModel)]="seatMap.rows" min="1" max="100" required></div>
+          <div class="form-field"><label>Columns</label><input type="number" name="columns" [(ngModel)]="seatMap.columns" min="1" max="100" required></div>
+          <div class="form-field"><label>Seat type</label><input name="seatType" [(ngModel)]="seatMap.seatType"></div>
+          <div class="form-field"><label>Seat price override</label><input type="number" name="seatPrice" [(ngModel)]="seatMap.seatPrice" min="0" step="0.01" placeholder="Use event price"></div>
+          <div class="form-field full"><button class="btn">Create seat map</button></div>
+        </form>
+      } @else {
+        <div class="occupancy-row"><span>Seat occupancy</span><strong>{{ seatOccupancy() }}%</strong></div>
+        <div class="occupancy-track"><div class="occupancy-bar" [ngStyle]="{ width: seatOccupancy() + '%' }"></div></div>
+        <div class="map-scroll"><div class="seat-grid">@for (seat of seats(); track seat.seatId) { <button type="button" class="seat-button" [class.blocked]="seat.status !== 'Available'" (click)="selectSeat(seat)">{{ seat.seatNumber }}<span class="sub">{{ seat.status }}</span></button> }</div></div>
+        @if (editingSeat; as currentSeat) { <form #seatEditForm="ngForm" (ngSubmit)="saveSeat(seatEditForm)" class="form-grid" style="margin-top:16px"><div class="form-field"><label>Seat number</label><input name="seatNumber" [(ngModel)]="seatEdit.seatNumber" required maxlength="20"></div><div class="form-field"><label>Seat type</label><input name="seatTypeEdit" [(ngModel)]="seatEdit.seatType"></div><div class="form-field"><label>Price</label><input type="number" name="seatPriceEdit" [(ngModel)]="seatEdit.seatPrice" min="0"></div><div class="form-field full"><div class="actions"><button class="btn">Save seat</button><button class="btn btn-danger" type="button" (click)="deleteSeat(currentSeat)">Delete seat</button></div></div></form> }
+      }
+    </section>
+    <section class="card">
+      <h2>Parking Layout</h2>
+      @if (!slots().length) {
+        <form #parkingForm="ngForm" (ngSubmit)="createParking(parkingForm)" class="form-grid">
+          <div class="form-field"><label>Slot count</label><input type="number" name="slotCount" [(ngModel)]="parkingMap.slotCount" min="1" max="1000" required></div>
+          <div class="form-field"><label>Prefix</label><input name="prefix" [(ngModel)]="parkingMap.prefix" required maxlength="10"></div>
+          <div class="form-field"><label>Zone</label><input name="zone" [(ngModel)]="parkingMap.zone"></div>
+          <div class="form-field"><label>Event parking fee</label><input type="number" name="fee" [(ngModel)]="parkingMap.fee" min="0" step="0.01" required></div>
+          <div class="form-field full"><button class="btn">Create parking layout</button></div>
+        </form>
+      } @else {
+        <div class="occupancy-row"><span>Parking occupancy</span><strong>{{ parkingOccupancy() }}%</strong></div>
+        <div class="occupancy-track"><div class="occupancy-bar" [ngStyle]="{ width: parkingOccupancy() + '%' }"></div></div>
+        <div class="map-scroll"><div class="parking-grid">@for (slot of slots(); track slot.parkingSlotId) { <button type="button" class="slot-button" [class.blocked]="slot.status !== 'Available'" (click)="selectSlot(slot)">{{ slot.slotNumber }}<span class="sub">{{ slot.status }}</span></button> }</div></div>
+        @if (editingSlot; as currentSlot) { <form #slotEditForm="ngForm" (ngSubmit)="saveSlot(slotEditForm)" class="form-grid" style="margin-top:16px"><div class="form-field"><label>Slot number</label><input name="slotNumber" [(ngModel)]="slotEdit.slotNumber" required maxlength="20"></div><div class="form-field"><label>Zone</label><input name="zoneEdit" [(ngModel)]="slotEdit.zone"></div><div class="form-field"><label>Event parking fee</label><input type="number" name="eventParkingFee" [(ngModel)]="slotEdit.eventParkingFee" min="0"></div><div class="form-field full"><div class="actions"><button class="btn">Save slot</button><button class="btn btn-danger" type="button" (click)="deleteSlot(currentSlot)">Delete slot</button></div></div></form> }
+      }
+    </section>
+  </div>
+}

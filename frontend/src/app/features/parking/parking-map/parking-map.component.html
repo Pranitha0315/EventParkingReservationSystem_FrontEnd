@@ -1,4 +1,4 @@
-<!-- <section class="booking-progress" aria-label="Booking progress">
+<section class="booking-progress" aria-label="Booking progress">
   <a [routerLink]="['/events', eventId]" class="progress-step done"><span>1</span><div><b>Event</b><small>Chosen</small></div></a>
   <a [routerLink]="['/events', eventId, 'seats']" class="progress-step done"><span>2</span><div><b>Seats</b><small>{{ state.seatCount() }} selected</small></div></a>
   <div class="progress-step active"><span>3</span><div><b>Parking</b><small>Choose or skip</small></div></div>
@@ -128,5 +128,5 @@
       @if (!state.parking()) { <button class="parking-skip-link" type="button" (click)="skipParking()">Skip parking — I do not need a space</button> }
     </aside>
   </div>
-} -->
+} 
 

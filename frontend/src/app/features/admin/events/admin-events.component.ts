@@ -4,7 +4,7 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { forkJoin } from 'rxjs';
 import { EventService } from '../../../core/services/event.service';
 import { VenueService } from '../../../core/services/venue.service';
-// import { CategoryService } from '../../../core/services/category.service';
+import { CategoryService } from '../../../core/services/category.service';
 import { BookingService } from '../../../core/services/booking.service';
 import { EventItem } from '../../../core/models/event.model';
 import { Venue } from '../../../core/models/venue.model';
@@ -27,7 +27,7 @@ export class AdminEventsComponent implements OnInit {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly eventsService = inject(EventService);
   private readonly venuesService = inject(VenueService);
-  // private readonly categoriesService = inject(CategoryService);
+  private readonly categoriesService = inject(CategoryService);
   private readonly bookingsService = inject(BookingService);
 
   readonly events = signal<EventItem[]>([]);
@@ -55,11 +55,11 @@ export class AdminEventsComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    // forkJoin({ venues: this.venuesService.getAll(), categories: this.categoriesService.getAll() }).subscribe({
-    //   next: data => { this.venues.set(data.venues); this.categories.set(data.categories); },
-    //   error: error => this.error.set(apiErrorMessage(error))
-    // });
-    // this.load();
+    forkJoin({ venues: this.venuesService.getAll(), categories: this.categoriesService.getAll() }).subscribe({
+      next: data => { this.venues.set(data.venues); this.categories.set(data.categories); },
+      error: error => this.error.set(apiErrorMessage(error))
+    });
+    this.load();
   }
 
   load(): void {
@@ -85,14 +85,14 @@ export class AdminEventsComponent implements OnInit {
       capacity: item.capacity,
       parkingFee: item.parkingFee
     });
-    // this.bookingsService.getByEvent(item.eventId).subscribe({
-    //   next: bookings => {
-    //     const hasActive = bookings.some(x => x.status === 'Pending' || x.status === 'Confirmed');
-    //     this.priceLocked.set(hasActive);
-    //     if (hasActive) this.form.controls.ticketPrice.disable({ emitEvent: false });
-    //   },
-    //   error: () => undefined
-    // });
+    this.bookingsService.getByEvent(item.eventId).subscribe({
+      next: bookings => {
+        const hasActive = bookings.some(x => x.status === 'Pending' || x.status === 'Confirmed');
+        this.priceLocked.set(hasActive);
+        if (hasActive) this.form.controls.ticketPrice.disable({ emitEvent: false });
+      },
+      error: () => undefined
+    });
   }
 
   reset(): void {

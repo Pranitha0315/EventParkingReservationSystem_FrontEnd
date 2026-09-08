@@ -1,0 +1,60 @@
+<app-error-message [message]="error()" [retryable]="true" (retry)="load()" />
+@if (loading()) { <app-loading-spinner label="Preparing your dashboard..." /> }
+@else if (data(); as d) {
+  <section class="customer-dashboard-shell">
+    <div class="dashboard-float float-ticket">🎟️</div>
+    <div class="dashboard-float float-car">🚗</div>
+    <div class="dashboard-float float-music">🎵</div>
+    <div class="dashboard-float float-star">✨</div>
+    <div class="dashboard-float float-pin">📍</div>
+
+    <section class="customer-hero v3-customer-hero">
+      <div class="customer-hero-copy">
+        <span class="hero-kicker">EVENT + SEAT + PARKING</span>
+        <h1>Find an event and build your complete plan.</h1>
+        <p>Every event opens its own booking experience — event-matched seating, optional parking, payment and a downloadable receipt.</p>
+        <div class="hero-actions">
+          <a class="btn btn-hero" routerLink="/events">Browse available events →</a>
+          <a class="btn btn-ghost-light" routerLink="/bookings">My bookings</a>
+        </div>
+        <div class="hero-trust-row">
+          <span>✓ Event-specific seat maps</span>
+          <span>✓ Easy parking choice</span>
+          <span>✓ Digital receipt</span>
+        </div>
+      </div>
+
+      <div class="customer-hero-art v3-event-object-stage clean-hero-stage">
+        @if (featuredEvents()[0]; as heroEvent) {
+          <div class="recent-event-wrap">
+            <span class="recent-event-chip">RECENT EVENT HIGHLIGHT</span>
+            <a class="dashboard-event-object recent-event-card" [class]="'dashboard-event-object recent-event-card ' + eventTheme(heroEvent)" [routerLink]="['/events', heroEvent.eventId]" aria-label="Open featured event">
+              <div class="event-object-orbit orbit-a"></div>
+              <div class="event-object-orbit orbit-b"></div>
+              <div class="event-object-icon">{{ eventIcon(heroEvent) }}</div>
+              <span class="event-object-label">FEATURED EVENT</span>
+              <strong>{{ heroEvent.name }}</strong>
+              <small>{{ heroEvent.venueName }} · {{ heroEvent.eventDate }}</small>
+              <div class="event-object-action">View event →</div>
+            </a>
+          </div>
+        } @else {
+          <img src="/assets/event-parking-hero.svg" alt="Event ticket and parking illustration">
+        }
+      </div>
+    </section>
+
+    <section class="dashboard-overview only-activity-overview">
+      <div class="section-heading-inline">
+        <div><span class="eyebrow">YOUR ACTIVITY</span><h2>Everything at a glance</h2></div>
+        <a routerLink="/notifications">View notifications →</a>
+      </div>
+      <section class="stat-grid premium-stats">
+        <app-stat-card label="Upcoming bookings" [value]="d.upcomingBookings" note="Pending or confirmed" />
+        <app-stat-card label="Reserved parking" [value]="d.reservedParking" note="Active reservations" />
+        <app-stat-card label="Recent payments" [value]="d.recentPayments" note="Completed payments" />
+        <app-stat-card label="Unread notifications" [value]="d.unreadNotifications" note="Needs your attention" />
+      </section>
+    </section>
+  </section>
+}

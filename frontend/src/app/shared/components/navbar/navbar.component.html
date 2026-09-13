@@ -1,0 +1,43 @@
+<header class="topbar">
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <a class="brand" [routerLink]="auth.isAdmin() ? '/admin' : (auth.isCustomer() ? '/dashboard' : '/login')">
+      <span class="brand-mark">EP</span>
+      <span>Event & Parking</span>
+    </a>
+
+    @if (auth.isCustomer()) {
+      <div class="nav-links">
+        <a routerLink="/events" routerLinkActive="active">Events</a>
+        <a routerLink="/bookings" routerLinkActive="active">Bookings</a>
+        <a routerLink="/payments" routerLinkActive="active">Payments</a>
+        <a routerLink="/notifications" routerLinkActive="active" class="bell-link">
+          Notifications
+          @if (notifications.unreadCount() > 0) { <span class="nav-badge">{{ notifications.unreadCount() }}</span> }
+        </a>
+        <a routerLink="/profile" routerLinkActive="active">Profile</a>
+      </div>
+      <div class="nav-summary" title="Current booking selection">
+        {{ bookingState.seatCount() }} seat(s) · LKR {{ bookingState.total().toFixed(2) }}
+      </div>
+      <button class="btn btn-secondary btn-small" type="button" (click)="logout()">Logout</button>
+    } @else if (auth.isAdmin()) {
+      <div class="nav-links admin-links">
+        <a routerLink="/admin" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">Dashboard</a>
+        <a routerLink="/admin/customers" routerLinkActive="active">Customers</a>
+        <a routerLink="/admin/venues" routerLinkActive="active">Venues</a>
+        <a routerLink="/admin/categories" routerLinkActive="active">Categories</a>
+        <a routerLink="/admin/events" routerLinkActive="active">Events</a>
+        <a routerLink="/admin/layouts" routerLinkActive="active">Layouts</a>
+        <a routerLink="/admin/bookings" routerLinkActive="active">Bookings</a>
+      </div>
+      <button class="btn btn-secondary btn-small" type="button" (click)="logout()">Logout</button>
+    } @else {
+      <div class="nav-links guest-links">
+        <a routerLink="/login" routerLinkActive="active">Customer Login</a>
+        <a routerLink="/register" routerLinkActive="active">Register</a>
+        <a routerLink="/admin/login" routerLinkActive="active">Admin</a>
+      </div>
+    }
+  </nav>
+  @if (navigating()) { <div class="nav-progress" aria-label="Loading"></div> }
+</header>

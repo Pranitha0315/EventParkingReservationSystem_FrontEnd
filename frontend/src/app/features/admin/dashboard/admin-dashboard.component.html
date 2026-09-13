@@ -1,0 +1,85 @@
+<div class="page-header admin-dashboard-header">
+  <div><span class="eyebrow">ADMIN CONTROL CENTER</span><h1>Administrator Dashboard</h1><p>System-wide statistics with yearly customer and revenue movement.</p></div>
+</div>
+<app-error-message [message]="error()" [retryable]="true" (retry)="load()" />
+@if (loading()) { <app-loading-spinner label="Loading admin dashboard..." /> }
+@else if (data(); as d) {
+  <section class="stat-grid admin-stat-grid">
+    <app-stat-card label="Total events" [value]="d.totalEvents" note="All events" />
+    <app-stat-card label="Total bookings" [value]="d.totalBookings" note="All statuses" />
+    <app-stat-card label="Available seats" [value]="d.availableSeats" note="System-wide" />
+    <app-stat-card label="Occupied parking" [value]="d.occupiedParkingSlots" note="Reserved / held" />
+    <app-stat-card label="Total revenue" [value]="(d.totalRevenue | currency:'LKR':'symbol-narrow':'1.2-2') ?? ''" note="Backend completed payments" />
+    <app-stat-card label="Total customers" [value]="d.totalCustomers" note="Registered accounts" />
+  </section>
+
+  <section class="admin-v7-trends">
+    <article class="card admin-line-chart-card customers-line-card">
+      <div class="admin-line-chart-head">
+        <div><span class="eyebrow">CUSTOMER TREND</span><h2>Customers by year</h2><p>New customer registrations for each year, so increases and decreases are easy to compare.</p></div>
+        @if (customerSummary(); as trend) {
+          <div class="admin-trend-badge" [class.up]="trend.direction === 'up'" [class.down]="trend.direction === 'down'">
+            <span>{{ directionIcon(trend) }}</span><strong>{{ latestCustomerValue() }}</strong><small>latest year</small>
+          </div>
+        }
+      </div>
+
+      <div class="admin-line-chart-summary" [class.down]="customerSummary().direction === 'down'" [class.up]="customerSummary().direction === 'up'">
+        <span>{{ directionIcon(customerSummary()) }}</span><strong>{{ trendText(customerSummary(), 'customer') }}</strong>
+      </div>
+
+      <div class="admin-svg-chart-wrap" aria-label="Yearly customer registration line chart">
+        <svg class="admin-svg-line-chart" viewBox="0 0 100 58" role="img" aria-label="Yearly customer registrations">
+          <line x1="8" y1="45" x2="92" y2="45" class="chart-axis" />
+          <line x1="8" y1="27" x2="92" y2="27" class="chart-grid-line" />
+          <line x1="8" y1="9" x2="92" y2="9" class="chart-grid-line" />
+          <path [attr.d]="customerPath()" class="chart-line customer-chart-line" />
+          @for (point of customerTrend(); track point.year) {
+            <circle [attr.cx]="point.x" [attr.cy]="point.y" r="2.2" class="chart-point customer-chart-point" />
+            <text [attr.x]="point.x" [attr.y]="point.y - 4" text-anchor="middle" class="chart-value-label">{{ point.value }}</text>
+            <text [attr.x]="point.x" y="54" text-anchor="middle" class="chart-year-label">{{ point.year }}</text>
+          }
+        </svg>
+      </div>
+    </article>
+
+    <article class="card admin-line-chart-card revenue-line-card">
+      <div class="admin-line-chart-head">
+        <div><span class="eyebrow">REVENUE TREND</span><h2>Revenue by year</h2><p>Confirmed/completed booking revenue grouped by year from the existing booking data.</p></div>
+        @if (revenueSummary(); as trend) {
+          <div class="admin-trend-badge" [class.up]="trend.direction === 'up'" [class.down]="trend.direction === 'down'">
+            <span>{{ directionIcon(trend) }}</span><strong>{{ latestRevenueValue() | currency:'LKR':'symbol-narrow':'1.0-0' }}</strong><small>latest year</small>
+          </div>
+        }
+      </div>
+
+      @if (chartLoading()) {
+        <div class="revenue-chart-loading">Preparing yearly revenue trend…</div>
+      } @else {
+        <div class="admin-line-chart-summary" [class.down]="revenueSummary().direction === 'down'" [class.up]="revenueSummary().direction === 'up'">
+          <span>{{ directionIcon(revenueSummary()) }}</span><strong>{{ trendText(revenueSummary(), 'revenue') }}</strong>
+        </div>
+
+        <div class="admin-svg-chart-wrap" aria-label="Yearly revenue line chart">
+          <svg class="admin-svg-line-chart" viewBox="0 0 100 58" role="img" aria-label="Yearly revenue">
+            <line x1="8" y1="45" x2="92" y2="45" class="chart-axis" />
+            <line x1="8" y1="27" x2="92" y2="27" class="chart-grid-line" />
+            <line x1="8" y1="9" x2="92" y2="9" class="chart-grid-line" />
+            <path [attr.d]="revenuePath()" class="chart-line revenue-chart-line" />
+            @for (point of revenueTrend(); track point.year) {
+              <circle [attr.cx]="point.x" [attr.cy]="point.y" r="2.2" class="chart-point revenue-chart-point" />
+              <text [attr.x]="point.x" [attr.y]="point.y - 4" text-anchor="middle" class="chart-value-label">{{ point.value | number:'1.0-0' }}</text>
+              <text [attr.x]="point.x" y="54" text-anchor="middle" class="chart-year-label">{{ point.year }}</text>
+            }
+          </svg>
+        </div>
+      }
+    </article>
+  </section>
+
+  <section class="admin-action-grid">
+    <a class="card admin-action-card" routerLink="/admin/events"><span>01</span><div><h3>Manage events</h3><p>Create and update the event catalogue.</p></div><b>→</b></a>
+    <a class="card admin-action-card" routerLink="/admin/layouts"><span>02</span><div><h3>Manage layouts</h3><p>Configure event seats and parking slots.</p></div><b>→</b></a>
+    <a class="card admin-action-card" routerLink="/admin/bookings"><span>03</span><div><h3>Manage bookings</h3><p>Review customer bookings and cancel with a reason.</p></div><b>→</b></a>
+  </section>
+}

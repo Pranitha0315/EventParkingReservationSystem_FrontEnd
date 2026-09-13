@@ -1,1 +1,9 @@
 
+<div class="page-header"><div><h1>Customer Management</h1><p>Search by name or email, view account state, deactivate or reactivate.</p></div></div>
+<section class="card card-flat"><form class="actions" (ngSubmit)="applySearch()"><input style="max-width:440px" name="search" [(ngModel)]="search" placeholder="Name or email"><button class="btn" type="submit">Search</button></form></section>
+<app-error-message [message]="error()" [retryable]="true" (retry)="load()" />
+@if (success()) { <div class="alert alert-success">{{ success() }}</div> }
+@if (loading()) { <app-loading-spinner label="Loading customers..." /> }
+@else if (!customers().length) { <app-empty-state title="No customers found" message="Try another name or email." /> }
+@else { <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Status</th><th>Verified</th><th>Bookings</th><th></th></tr></thead><tbody>@for (customer of customers(); track customer.customerId) { <tr><td><strong>{{ customer.name }}</strong></td><td>{{ customer.email }}</td><td>{{ customer.phone }}</td><td><app-status-badge [status]="customer.status" /></td><td>{{ customer.emailVerified ? 'Yes' : 'No' }}</td><td>{{ customer.bookingCount }}</td><td><button class="btn btn-small" [class.btn-danger]="customer.status !== 'Deactivated'" type="button" (click)="askToggle(customer)">{{ customer.status === 'Deactivated' ? 'Reactivate' : 'Deactivate' }}</button></td></tr> }</tbody></table></div> }
+<app-confirm-dialog [open]="confirmOpen()" [title]="selected?.status === 'Deactivated' ? 'Reactivate customer?' : 'Deactivate customer?'" [message]="selected ? ('Change account status for ' + selected.name + '?') : ''" [confirmText]="selected?.status === 'Deactivated' ? 'Reactivate' : 'Deactivate'" [danger]="selected?.status !== 'Deactivated'" (confirm)="toggleStatus()" (cancel)="confirmOpen.set(false)" />

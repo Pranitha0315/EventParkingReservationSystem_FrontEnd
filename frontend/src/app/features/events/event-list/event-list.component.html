@@ -1,0 +1,24 @@
+<div class="page-header v3-events-header">
+  <div><span class="eyebrow">DISCOVER EVENTS</span><h1>Available Events</h1><p>Choose an event first. Its seat screen will automatically use the matching concert, stadium, theatre or event-hall layout.</p></div>
+</div>
+
+<section class="card card-flat v3-event-filter-card">
+  <form class="form-grid" (ngSubmit)="applyFilters()">
+    <div class="form-field"><label>Event name</label><input name="name" [(ngModel)]="filters.name" placeholder="Search events"></div>
+    <div class="form-field"><label>Date</label><input type="date" name="date" [(ngModel)]="filters.date"></div>
+    <div class="form-field"><label>Venue</label><select name="venueId" [(ngModel)]="filters.venueId"><option value="">All venues</option>@for (venue of venues(); track venue.venueId) { <option [value]="venue.venueId">{{ venue.name }}</option> }</select></div>
+    <div class="form-field"><label>Category</label><select name="categoryId" [(ngModel)]="filters.categoryId"><option value="">All categories</option>@for (category of categories(); track category.eventCategoryId) { <option [value]="category.eventCategoryId">{{ category.name }}</option> }</select></div>
+    <div class="form-field full"><div class="actions"><button class="btn" type="submit">Show matching events</button><button class="btn btn-outline" type="button" (click)="clearFilters()">Clear</button></div></div>
+  </form>
+</section>
+
+<app-error-message [message]="error()" [retryable]="true" (retry)="load()" />
+@if (loading()) { <app-loading-spinner label="Loading events..." /> }
+@else if (!events().length) { <app-empty-state title="No events found" message="Try changing the search filters." /> }
+@else {
+  <section class="grid auto-grid v3-event-list-grid">
+    @for (event of events(); track event.eventId) {
+      <app-event-card [event]="event" />
+    }
+  </section>
+}
